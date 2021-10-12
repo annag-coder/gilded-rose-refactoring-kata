@@ -20,7 +20,7 @@ const generalSellInCheck = itemName => it('should decrease sellIn by 1', functio
     expect(items[2].sellIn).to.equal(0);
 });
 
-const noChangeSellInCheck = itemName => it('should never decrease sellIn', function() {
+const noChangeSellInCheck = itemName => it('should never change sellIn', function() {
     const gildedRose = new GildedRose([
         new Item(itemName, -1, 80),
         new Item(itemName, 0, 80),
@@ -66,10 +66,22 @@ const generalQualityCheck = itemName => {
     });
 }
 
+const noChangeQualityCheck = itemName => it('should never change quality', function() {
+    const gildedRose = new GildedRose([
+        new Item(itemName, -1, 80),
+        new Item(itemName, 0, 80),
+        new Item(itemName, 1, 80)
+    ]);
+    const items = gildedRose.updateQuality();
+    expect(items[0].quality).to.equal(80);
+    expect(items[1].quality).to.equal(80);
+    expect(items[2].quality).to.equal(80);
+});
+
+
 describe('Gilded Rose: updateQuality', function () {
     describe('General item', function () {
         generalSellInCheck(ITEM_NAMES.GENERAL)
-
         generalQualityCheck(ITEM_NAMES.GENERAL)
     });
 
@@ -83,5 +95,6 @@ describe('Gilded Rose: updateQuality', function () {
 
     describe('Sulfuras item', function () {
         noChangeSellInCheck(ITEM_NAMES.SULFURAS)
+        noChangeQualityCheck(ITEM_NAMES.SULFURAS)
     });
 });
