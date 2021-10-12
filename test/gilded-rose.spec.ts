@@ -6,6 +6,7 @@ const ITEM_NAMES = {
     AGED: 'Aged Brie',
     SULFURAS: 'Sulfuras, Hand of Ragnaros',
     BACKSTAGE: 'Backstage passes to a TAFKAL80ETC concert',
+    CONJURED: 'Conjured Mana Cake',
 }
 
 const generalSellInCheck = itemName => it('should decrease sellIn by 1', function() {
@@ -184,6 +185,42 @@ const backstageQualityCheck = itemName => {
     });
 }
 
+const conjuredQualityCheck = itemName => {
+    it('should decrease quality by 2 before sellIn', function() {
+        const gildedRose = new GildedRose([
+            new Item(itemName, 3, 4),
+            new Item(itemName, 3, 3),
+        ]);
+        const items = gildedRose.updateQuality();
+        expect(items[0].quality).to.equal(2);
+        expect(items[1].quality).to.equal(1);
+    });
+
+    it('should decrease quality by 4 after sellIn', function() {
+        const gildedRose = new GildedRose([
+            new Item(itemName, 0, 10),
+            new Item(itemName, 0, 5),
+        ]);
+        let items = gildedRose.updateQuality();
+        expect(items[0].quality).to.equal(6);
+        expect(items[1].quality).to.equal(1);
+    });
+
+    it('should never drop quality below 0', function() {
+        const gildedRose = new GildedRose([
+            new Item(itemName, 0, 4),
+            new Item(itemName, 0, 3),
+            new Item(itemName, 0, 1),
+            new Item(itemName, 0, 0),
+        ]);
+        let items = gildedRose.updateQuality();
+        expect(items[0].quality).to.equal(0);
+        expect(items[1].quality).to.equal(0);
+        expect(items[2].quality).to.equal(0);
+        expect(items[3].quality).to.equal(0);
+    });
+}
+
 describe('Gilded Rose: updateQuality', function () {
     describe('General item', function () {
         generalSellInCheck(ITEM_NAMES.GENERAL)
@@ -203,5 +240,10 @@ describe('Gilded Rose: updateQuality', function () {
     describe('Sulfuras item', function () {
         noChangeSellInCheck(ITEM_NAMES.SULFURAS)
         noChangeQualityCheck(ITEM_NAMES.SULFURAS)
+    });
+
+    describe('Conjured item', function () {
+        generalSellInCheck(ITEM_NAMES.CONJURED)
+        conjuredQualityCheck(ITEM_NAMES.CONJURED)
     });
 });
