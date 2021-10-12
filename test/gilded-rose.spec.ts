@@ -120,6 +120,69 @@ const agedQualityCheck = itemName => {
     });
 }
 
+const backstageQualityCheck = itemName => {
+    it('should increase quality by 1 before 10 days to sellIn', function() {
+        const gildedRose = new GildedRose([
+            new Item(itemName, 12, 1),
+            new Item(itemName, 11, 1),
+        ]);
+        const items = gildedRose.updateQuality();
+        expect(items[0].quality).to.equal(2);
+        expect(items[1].quality).to.equal(2);
+    });
+
+    it('should increase quality by 2 before 5 days to sellIn', function() {
+        const gildedRose = new GildedRose([
+            new Item(itemName, 10, 1),
+            new Item(itemName, 6, 1),
+        ]);
+        const items = gildedRose.updateQuality();
+        expect(items[0].quality).to.equal(3);
+        expect(items[1].quality).to.equal(3);
+    });
+
+    it('should increase quality by 3 before 0 days to sellIn', function() {
+        const gildedRose = new GildedRose([
+            new Item(itemName, 5, 1),
+            new Item(itemName, 1, 1),
+        ]);
+        const items = gildedRose.updateQuality();
+        expect(items[0].quality).to.equal(4);
+        expect(items[1].quality).to.equal(4);
+    });
+
+    it('should never increase quality above 50', function() {
+        const gildedRose = new GildedRose([
+            new Item(itemName, 11, 49),
+            new Item(itemName, 11, 50),
+            new Item(itemName, 10, 49),
+            new Item(itemName, 10, 50),
+            new Item(itemName, 5, 49),
+            new Item(itemName, 5, 50),
+            new Item(itemName, 1, 49),
+            new Item(itemName, 1, 50),
+        ]);
+        let items = gildedRose.updateQuality();
+        expect(items[0].quality).to.equal(50);
+        expect(items[1].quality).to.equal(50);
+        expect(items[2].quality).to.equal(50);
+        expect(items[3].quality).to.equal(50);
+        expect(items[4].quality).to.equal(50);
+        expect(items[5].quality).to.equal(50);
+        expect(items[6].quality).to.equal(50);
+        expect(items[7].quality).to.equal(50);
+    });
+
+    it('should drop quality to 0 after sellIn', function() {
+        const gildedRose = new GildedRose([
+            new Item(itemName, 0, 1),
+            new Item(itemName, 0, 50),
+        ]);
+        const items = gildedRose.updateQuality();
+        expect(items[0].quality).to.equal(0);
+        expect(items[1].quality).to.equal(0);
+    });
+}
 
 describe('Gilded Rose: updateQuality', function () {
     describe('General item', function () {
@@ -134,6 +197,7 @@ describe('Gilded Rose: updateQuality', function () {
 
     describe('Backstage item', function () {
         generalSellInCheck(ITEM_NAMES.BACKSTAGE)
+        backstageQualityCheck(ITEM_NAMES.BACKSTAGE)
     });
 
     describe('Sulfuras item', function () {
