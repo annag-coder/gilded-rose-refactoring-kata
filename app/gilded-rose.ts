@@ -14,6 +14,7 @@ const ITEM_TYPES = {
     AGED: 'Aged Brie',
     SULFURAS: 'Sulfuras, Hand of Ragnaros',
     BACKSTAGE: 'Backstage passes to a TAFKAL80ETC concert',
+    CONJURED: 'Conjured Mana Cake',
 }
 
 export class GildedRose {
@@ -53,6 +54,14 @@ export class GildedRose {
                      this.items[i].quality = currentQuality < 48 ? currentQuality + 3 : 50
                 } else {
                      this.items[i].quality = 0
+                }
+            } else if (this.items[i].name === ITEM_TYPES.CONJURED) {
+                updateSellIn(i)
+
+                if (currentSellIn > 0) {
+                     this.items[i].quality = currentQuality > 2 ? currentQuality - 2 : 0
+                } else {
+                     this.items[i].quality = currentQuality > 4 ? currentQuality - 4 : 0
                 }
             } else  {
                 // default item
