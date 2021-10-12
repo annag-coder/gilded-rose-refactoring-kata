@@ -190,10 +190,12 @@ const conjuredQualityCheck = itemName => {
         const gildedRose = new GildedRose([
             new Item(itemName, 3, 4),
             new Item(itemName, 3, 3),
+            new Item(itemName, 3, 2),
         ]);
         const items = gildedRose.updateQuality();
         expect(items[0].quality).to.equal(2);
         expect(items[1].quality).to.equal(1);
+        expect(items[2].quality).to.equal(0);
     });
 
     it('should decrease quality by 4 after sellIn', function() {
@@ -210,6 +212,7 @@ const conjuredQualityCheck = itemName => {
         const gildedRose = new GildedRose([
             new Item(itemName, 0, 4),
             new Item(itemName, 0, 3),
+            new Item(itemName, 0, 2),
             new Item(itemName, 0, 1),
             new Item(itemName, 0, 0),
         ]);
@@ -218,6 +221,7 @@ const conjuredQualityCheck = itemName => {
         expect(items[1].quality).to.equal(0);
         expect(items[2].quality).to.equal(0);
         expect(items[3].quality).to.equal(0);
+        expect(items[4].quality).to.equal(0);
     });
 }
 
