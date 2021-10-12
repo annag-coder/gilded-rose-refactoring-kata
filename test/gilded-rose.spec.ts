@@ -62,7 +62,7 @@ const generalQualityCheck = itemName => {
         let items = gildedRose.updateQuality();
         expect(items[0].quality).to.equal(0);
         expect(items[1].quality).to.equal(0);
-        expect(items[1].quality).to.equal(0);
+        expect(items[2].quality).to.equal(0);
     });
 }
 
@@ -78,6 +78,48 @@ const noChangeQualityCheck = itemName => it('should never change quality', funct
     expect(items[2].quality).to.equal(80);
 });
 
+const agedQualityCheck = itemName => {
+    it('should increase quality by 1 before sellIn', function() {
+        const gildedRose = new GildedRose([
+            new Item(itemName, 3, 0),
+            new Item(itemName, 3, 1),
+        ]);
+        const items = gildedRose.updateQuality();
+        expect(items[0].quality).to.equal(1);
+        expect(items[1].quality).to.equal(2);
+    });
+
+    it('should increase quality by 2 after sellIn', function() {
+        const gildedRose = new GildedRose([
+            new Item(itemName, 0, 0),
+            new Item(itemName, 0, 1),
+        ]);
+        let items = gildedRose.updateQuality();
+        expect(items[0].quality).to.equal(2);
+        expect(items[1].quality).to.equal(3);
+    });
+
+    it('should never increase quality above 50', function() {
+        const gildedRose = new GildedRose([
+            new Item(itemName, 1, 48),
+            new Item(itemName, 1, 49),
+            new Item(itemName, 1, 50),
+            new Item(itemName, 0, 47),
+            new Item(itemName, 0, 48),
+            new Item(itemName, 0, 49),
+            new Item(itemName, 0, 50),
+        ]);
+        let items = gildedRose.updateQuality();
+        expect(items[0].quality).to.equal(49);
+        expect(items[1].quality).to.equal(50);
+        expect(items[2].quality).to.equal(50);
+        expect(items[3].quality).to.equal(49);
+        expect(items[4].quality).to.equal(50);
+        expect(items[5].quality).to.equal(50);
+        expect(items[6].quality).to.equal(50);
+    });
+}
+
 
 describe('Gilded Rose: updateQuality', function () {
     describe('General item', function () {
@@ -87,6 +129,7 @@ describe('Gilded Rose: updateQuality', function () {
 
     describe('Aged item', function () {
         generalSellInCheck(ITEM_NAMES.AGED)
+        agedQualityCheck(ITEM_NAMES.AGED)
     });
 
     describe('Backstage item', function () {
