@@ -9,34 +9,68 @@ const ITEM_NAMES = {
 }
 
 const generalSellInCheck = itemName => it('should decrease sellIn by 1', function() {
-    const gildedRose = new GildedRose([ new Item(itemName, 3, 20) ]);
-    let items = gildedRose.updateQuality();
-    expect(items[0].sellIn).to.equal(2);
-    items = gildedRose.updateQuality();
-    expect(items[0].sellIn).to.equal(1);
-    items = gildedRose.updateQuality();
-    expect(items[0].sellIn).to.equal(0);
-    items = gildedRose.updateQuality();
-    expect(items[0].sellIn).to.equal(-1);
-    items = gildedRose.updateQuality();
+    const gildedRose = new GildedRose([
+        new Item(itemName, -1, 20),
+        new Item(itemName, 0, 20),
+        new Item(itemName, 1, 20),
+    ]);
+    const items = gildedRose.updateQuality();
     expect(items[0].sellIn).to.equal(-2);
+    expect(items[1].sellIn).to.equal(-1);
+    expect(items[2].sellIn).to.equal(0);
 });
 
 const noChangeSellInCheck = itemName => it('should never decrease sellIn', function() {
-    const gildedRose = new GildedRose([ new Item(itemName, 3, 20) ]);
+    const gildedRose = new GildedRose([
+        new Item(itemName, -1, 80),
+        new Item(itemName, 0, 80),
+        new Item(itemName, 1, 80)
+    ]);
     const items = gildedRose.updateQuality();
-    expect(items[0].sellIn).to.equal(3);
+    expect(items[0].sellIn).to.equal(-1);
+    expect(items[1].sellIn).to.equal(0);
+    expect(items[2].sellIn).to.equal(1);
 });
+
+const generalQualityCheck = itemName => {
+    it('should decrease quality by 1 before sellIn', function() {
+        const gildedRose = new GildedRose([
+            new Item(itemName, 3, 2),
+            new Item(itemName, 3, 1),
+        ]);
+        const items = gildedRose.updateQuality();
+        expect(items[0].quality).to.equal(1);
+        expect(items[1].quality).to.equal(0);
+    });
+
+    it('should decrease quality by 2 after sellIn', function() {
+        const gildedRose = new GildedRose([
+            new Item(itemName, 0, 10),
+            new Item(itemName, 0, 5),
+        ]);
+        let items = gildedRose.updateQuality();
+        expect(items[0].quality).to.equal(8);
+        expect(items[1].quality).to.equal(3);
+    });
+
+    it('should never drop quality below 0', function() {
+        const gildedRose = new GildedRose([
+            new Item(itemName, 0, 2),
+            new Item(itemName, 0, 1),
+            new Item(itemName, 0, 0),
+        ]);
+        let items = gildedRose.updateQuality();
+        expect(items[0].quality).to.equal(0);
+        expect(items[1].quality).to.equal(0);
+        expect(items[1].quality).to.equal(0);
+    });
+}
 
 describe('Gilded Rose: updateQuality', function () {
     describe('General item', function () {
         generalSellInCheck(ITEM_NAMES.GENERAL)
 
-        it('should degrade quality by 1', function() {
-            const gildedRose = new GildedRose([ new Item(ITEM_NAMES.GENERAL, 3, 20) ]);
-            const items = gildedRose.updateQuality();
-            expect(items[0].quality).to.equal(19);
-        });
+        generalQualityCheck(ITEM_NAMES.GENERAL)
     });
 
     describe('Aged item', function () {
